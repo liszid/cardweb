@@ -1,0 +1,14 @@
+/project-root
+|-- /app
+|   |-- /src
+|   |   |-- /main
+|   |   |   |-- /assets
+|   |   |   |   |-- index.html
+|   |   |   |-- /java/com/example/cardgame
+|   |   |   |   |-- MainActivity.java
+|   |   |   |-- /res
+|   |   |   |   |-- /layout
+|   |   |   |   |   |-- activity_main.xml
+|   |   |-- AndroidManifest.xml
+|-- build.gradle (project-level)
+|-- settings.gradle
