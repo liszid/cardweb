@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Card Game</title>
+    <style>
+        canvas {
+            width: 100%;
+            height: 450px;
+            margin: 50px 0px 50px 0;
+            padding: 50px 0px 50px 0;
+            border: 3px black solid;
+            background: mediumspringgreen;
+            box-shadow: 0 10px 20px 0 #3cb37177, inset 0px -7px 12px 1px MediumSeaGreen;
+            border-radius: 20px;
+        }
+        
+        #kartya {
+            margin-top: 20px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="kartya" style="display:block;"></div>
+    <script>
+        window.onload = function() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let step = 0;
+            let colour = '';
+            let suit = '';
+            let binaryValue = '';
+            
+            addEventListener("volumechange", (event) => {document.getElementById("kartya").innerHTML = `Volume changed`;});
+            const handleVolumeChange = (direction) => {
+                console.log(`Volume ${direction}`); // Hibakereséshez
+                if (step === 0) {
+                    colour = direction === 'up' ? 'piros' : 'fekete';
+                } else if (step === 1) {
+                    suit = getSuit(colour, direction);
+                } else if (step >= 2 && step < 6) {
+                    binaryValue += direction === 'up' ? '1' : '0';
+                }
+                step++;
+                if (step === 6) {
+                    const cardValue = getCardValue(binaryValue);
+                    displayCard(colour, suit, cardValue);
+                }
+            };
+
+            const getSuit = (colour, direction) => {
+                const suits = {
+                    'piros': direction === 'up' ? 'kör' : 'káró',
+                    'fekete': direction === 'up' ? 'pikk' : 'treff'
+                };
+                return suits[colour];
+            };
+
+            const getCardValue = (binary) => {
+                const values = {
+                    '0001': 'A',
+                    '0010': '2',
+                    '0011': '3',
+                    '0100': '4',
+                    '0101': '5',
+                    '0110': '6',
+                    '0111': '7',
+                    '1000': '8',
+                    '1001': '9',
+                    '1010': '10',
+                    '1011': 'J',
+                    '1100': 'Q',
+                    '1101': 'K',
+                    '1111': 'A'
+                };
+                return values[binary] || 'Ismeretlen';
+            };
+
+            const displayCard = (colour, suit, value) => {
+                const suits = {
+                    'kör': '♥',
+                    'káró': '♦',
+                    'pikk': '♠',
+                    'treff': '♣'
+                };
+                const suitSymbol = suits[suit];
+                const cardcolour = (colour === 'piros') ? 'red' : 'black';
+
+                const svg = `
+                    <svg width="300" height="450" viewBox="0 0 100 150" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1" y="1" rx="15" ry="15" width="98" height="148" fill="#f5f5f5" stroke="black" stroke-width="2"/>
+                        <text x="10" y="30" font-size="24" fill="${cardcolour}">${suitSymbol}</text>
+                        <text x="10" y="120" font-size="24" fill="${cardcolour}" transform="rotate(180 50,120)">${suitSymbol}</text>
+                        <text x="50" y="90" font-size="48" fill="${cardcolour}" text-anchor="middle">${value}</text>
+                    </svg>
+                `;
+
+                document.getElementById("kartya").innerHTML = svg;
+                document.getElementById("kartya").style.display = 'block';
+                document.getElementById("canvas").style.display = 'none';
+            };
+
+            window.addEventListener('keydown', (event) => {
+                console.log(`Key pressed: ${event.key}`); // Hibakereséshez
+                document.getElementById("kartya").innerHTML = event.key;
+                if (event.key === 'AudioVolumeUp') {
+                    handleVolumeChange('up');
+                } else if (event.key === 'AudioVolumeDown') {
+                    handleVolumeChange('down');
+                }
+            });
+
+            canvas.addEventListener('mousedown', (event) => {
+                const direction = event.clientX < canvas.width / 2 ? 'down' : 'up';
+                handleVolumeChange(direction);
+            });
+        };
+    </script>
+</body>
+</html>
